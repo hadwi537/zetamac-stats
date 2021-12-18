@@ -83,6 +83,7 @@ class Zetamac:
         layout = [
                     [sg.Text(size=(1,1), key='-OUT-')],
                     [sg.Text('Score: {}'.format(score), font = ('Roboto Mono', 16))],
+                    [sg.Text('Restarting in ...', key = '-TEXT-')],
                     [sg.Text(size=(1,1), key='-OUT-')],
                     [sg.Button('Play Again'), sg.Button('Stats'), sg.Button('Exit')]
                 ]
@@ -96,20 +97,30 @@ class Zetamac:
             finalize=True
         )
 
+        timer = Countdown(5)
+
         window.bring_to_front()
 
-        event, values = window.read()
-        if event == sg.WIN_CLOSED or event == 'Exit':
-            self.driver.quit()
-            window.close()
+        while True:
+            # event loop
+            event, values = window.read(timeout = 10)
 
-        elif event == 'Play Again':
-            window.close()
-            self.restart_game()
+            if event in (sg.WIN_CLOSED ,'Exit'):
+                self.driver.quit()
+                window.close()
+                break
 
-        elif event == 'Stats':
-            window.close()
-            self.stats(score)
+            elif event == 'Play Again' or not timer.status():
+                window.close()
+                self.restart_game()
+                break
+
+            elif event == 'Stats':
+                window.close()
+                self.stats(score)
+                break
+
+            window['-TEXT-'].update('Restarting in ... {}'.format(timer.counting()))
 
     def restart_game(self) -> None:
         """
@@ -248,4 +259,26 @@ class Zetamac:
 
         plt.savefig('plot.png', transparent=True)
 
-Zetamac()
+class Countdown:
+    def __init__(self, seconds: int):
+        self.target_time = int(time.time()) + seconds
+        self.running = True
+    
+    def counting(self):
+        """
+        Returns seconds until timer is complete
+        """
+        time_remaining = max(self.target_time - int(time.time()), 0)
+        if not time_remaining:
+            self.running = False
+
+        return time_remaining
+
+    def status(self):
+        """
+        Check if countdown has reached expiry 
+        """
+        return self.running
+
+if __name__ == '__main__':
+    Zetamac()
