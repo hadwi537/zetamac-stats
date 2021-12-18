@@ -13,7 +13,10 @@ import csv
 import os
 
 class Zetamac:
-    def __init__(self) -> None:
+    def __init__(self, link: str, game_time: int) -> None:
+
+        self.link = link
+        self.game_time = game_time
         
         # check data.csv exists
         if not os.path.isfile('.\data.csv'):
@@ -39,7 +42,7 @@ class Zetamac:
         Called at the beginning of every game
         """
 
-        time.sleep(30)
+        time.sleep(self.game_time)
         score = self.store_data()
         self.end_of_game(score)
 
@@ -48,7 +51,7 @@ class Zetamac:
         Initialise the browser
         """
 
-        self.driver.get('https://arithmetic.zetamac.com/game?key=72740d67')
+        self.driver.get(self.link)
         self.driver.maximize_window()
 
     def store_data(self) -> int:
@@ -152,11 +155,6 @@ class Zetamac:
             [sg.Text(statistics[0],font = ('Roboto Mono', 22), text_color= 'white')]
         ]
 
-        best_today =[
-            [sg.Text('best today')],
-            [sg.Text('5')]
-        ]
-
         def mini_col(label, score):
             return sg.Column([[sg.Text(label, font = ('Roboto Mono', 10))],[sg.Text(score, font = ('Roboto Mono', 16), text_color= 'white')]])
 
@@ -211,7 +209,7 @@ class Zetamac:
 
         std_last_ten = '{:.1f}'.format(data.tail(10)['score'].std())
 
-        time_today = '{}m'.format(len(today_results) * 2)
+        time_today = '{}m'.format(len(today_results) * self.game_time / 60)
 
         av_all_time = '{:.1f}'.format(data['score'].mean())
 
@@ -281,4 +279,4 @@ class Countdown:
         return self.running
 
 if __name__ == '__main__':
-    Zetamac()
+    Zetamac('https://arithmetic.zetamac.com/game?key=a7220a92', 120)
