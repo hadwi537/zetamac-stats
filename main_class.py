@@ -60,12 +60,12 @@ class Zetamac:
         """
 
         try:
-            score = self.driver.find_element_by_xpath('//*[@id="game"]/div/div[2]/p[1]').text.split()[-1]
+            score = self.driver.find_element("xpath",'//*[@id="game"]/div/div[2]/p[1]').text.split()[-1]
 
         except IndexError:
             print('Score not in! Trying again in 2 seconds.')
             time.sleep(3)
-            score = self.driver.find_element_by_xpath('//*[@id="game"]/div/div[2]/p[1]').text.split()[-1]
+            score = self.driver.find_element("xpath", '//*[@id="game"]/div/div[2]/p[1]').text.split()[-1]
 
         with open('.\data.csv', 'a', newline = '') as f:
             writer = csv.writer(f)
@@ -130,8 +130,8 @@ class Zetamac:
         Restart the game
         """
 
-        self.driver.find_element_by_xpath('//*[@id="game"]/div/div[2]/p[2]/a[1]').click()
-        self.driver.find_element_by_xpath('//*[@id="game"]/div/div[1]/input').click()
+        self.driver.find_element('xpath', '//*[@id="game"]/div/div[2]/p[2]/a[1]').click()
+        self.driver.find_element('xpath', '//*[@id="game"]/div/div[1]/input').click()
 
         self.init_game()
     
